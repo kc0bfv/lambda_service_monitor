@@ -11,7 +11,7 @@ def alert_failed(msg_txt="Connection fail"):
     profile = os.environ.get("profile")
     from_addr = os.environ["email_from"]
     to_addr = os.environ["email_to"]
-    subject = "ALERT: Channel Builder Monitor"
+    subject = "ALERT: Service Monitor"
 
     sess = boto3.session.Session(region_name=region, profile_name=profile)
     ses = sess.client("ses")
