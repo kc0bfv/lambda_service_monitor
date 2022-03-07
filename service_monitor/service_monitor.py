@@ -15,9 +15,12 @@ def get_settings():
         SETTINGS["region"] = os.environ.get("region")
         SETTINGS["profile"] = os.environ.get("profile")
         SETTINGS["from_addr"] = os.environ["email_from"]
-        SETTINGS["to_addr"] = os.environ["email_to"]
         SETTINGS["url"] = os.environ["monitor_url"]
         SETTINGS["expect"] = int(os.environ["expect_code"])
+
+        to_addr_s = os.environ["email_to"]
+        to_addr_list = [s.strip() for s in to_addr_s.split(";") if s.strip() != ""]
+        SETTINGS["to_addrs"] = to_addr_list
     return SETTINGS
     
 
@@ -31,7 +34,7 @@ def alert_failed(msg_txt: str = "Connection fail") -> None:
     ses = sess.client("ses")
     response = ses.send_email(
         Source = settings["from_addr"],
-        Destination = {"ToAddresses": [settings["to_addr"]]},
+        Destination = {"ToAddresses": settings["to_addrs"]},
         Message = {
             "Subject": {"Data": subject},
             "Body": {"Text": {"Data": body} },
@@ -104,7 +107,7 @@ class TestClass(unittest.TestCase):
             "region": "fake_reg",
             "profile": "fake_prof",
             "from_addr": "from@from.com",
-            "to_addr": "to@to.com",
+            "to_addrs": ["to@to.com"],
             "url": "https://google.com/",
             "expect": 200,
         }
@@ -123,7 +126,7 @@ class TestClass(unittest.TestCase):
             "region": "fake_reg",
             "profile": "fake_prof",
             "from_addr": "from@from.com",
-            "to_addr": "to@to.com",
+            "to_addrs": ["to@to.com"],
             "url": "https://google.com/",
             "expect": 400,
         }
@@ -142,7 +145,7 @@ class TestClass(unittest.TestCase):
         self.assertEqual(out_sess.profile_name, fake_set["profile"])
         self.assertEqual(out_sess.service, "ses")
         self.assertEqual(out_sess.send_email["src"], fake_set["from_addr"])
-        self.assertEqual(out_sess.send_email["dest"]["ToAddresses"], [fake_set["to_addr"]])
+        self.assertEqual(out_sess.send_email["dest"]["ToAddresses"], fake_set["to_addrs"])
         print(out_sess.send_email["msg"])
 
     def test_with_404_expect_404(self):
@@ -152,7 +155,7 @@ class TestClass(unittest.TestCase):
             "region": "fake_reg",
             "profile": "fake_prof",
             "from_addr": "from@from.com",
-            "to_addr": "to@to.com",
+            "to_addrs": ["to@to.com"],
             "url": "https://google.com/WEKNenWENWEweklj",
             "expect": 404,
         }
@@ -171,7 +174,7 @@ class TestClass(unittest.TestCase):
             "region": "fake_reg",
             "profile": "fake_prof",
             "from_addr": "from@from.com",
-            "to_addr": "to@to.com",
+            "to_addrs": ["to@to.com"],
             "url": "https://google.com/WEKNenWENWEweklj",
             "expect": 300,
         }
@@ -190,5 +193,5 @@ class TestClass(unittest.TestCase):
         self.assertEqual(out_sess.profile_name, fake_set["profile"])
         self.assertEqual(out_sess.service, "ses")
         self.assertEqual(out_sess.send_email["src"], fake_set["from_addr"])
-        self.assertEqual(out_sess.send_email["dest"]["ToAddresses"], [fake_set["to_addr"]])
+        self.assertEqual(out_sess.send_email["dest"]["ToAddresses"], fake_set["to_addrs"])
         print(out_sess.send_email["msg"])
