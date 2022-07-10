@@ -71,6 +71,7 @@ resource "aws_lambda_function" "function" {
       region      = var.region
       email_from  = var.from_addr
       email_to    = var.to_addr
+      timeout     = var.timeout
     }
   }
 

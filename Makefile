@@ -1,6 +1,8 @@
-service_monitor.zip: service_monitor/service_monitor.py
-	cd service_monitor && zip -u $@ service_monitor.py
-	mv service_monitor/$@ ./
+SRC := service_monitor/service_monitor.py
+OUT_ZIP := service_monitor.zip
+
+${OUT_ZIP}: ${SRC}
+	zip -j -u "$@" "$<"
 
 test:
-	python3 -m unittest service_monitor/service_monitor.py
+	python3 -m unittest "${SRC}"

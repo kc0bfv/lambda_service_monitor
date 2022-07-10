@@ -21,6 +21,7 @@ def get_settings():
         to_addr_s = os.environ["email_to"]
         to_addr_list = [s.strip() for s in to_addr_s.split(";") if s.strip() != ""]
         SETTINGS["to_addrs"] = to_addr_list
+        SETTINGS["timeout"] = int(os.environ.get("timeout", "10"))
     return SETTINGS
     
 
@@ -47,7 +48,7 @@ def run_monitor():
     settings = get_settings()
     req = urllib.request.Request(settings["url"])
     try:
-        with urllib.request.urlopen(req, timeout=1) as urlf:
+        with urllib.request.urlopen(req, timeout=settings["timeout"]) as urlf:
             data = urlf.read()
     except urllib.error.HTTPError as err:
         if err.status == settings["expect"]:
